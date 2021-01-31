@@ -1,0 +1,4 @@
+build/
+store/
+*.txt
+*.pyc

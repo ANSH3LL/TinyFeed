@@ -1,0 +1,25 @@
+.loading-anim {
+    font-size: 20px;
+}
+
+.loading-anim:after {
+    width: 0px;
+    overflow: hidden;
+    content: "\2026";
+    display: inline-block;
+    vertical-align: bottom;
+    animation: ellipsis steps(4, end) 900ms infinite;
+    -webkit-animation: ellipsis steps(4, end) 900ms infinite;
+}
+
+@keyframes ellipsis {
+    to {
+        width: 1.25em;
+    }
+}
+
+@-webkit-keyframes ellipsis {
+    to {
+        width: 1.25em;
+    }
+}

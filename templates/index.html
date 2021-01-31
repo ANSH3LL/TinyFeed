@@ -1,0 +1,143 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>TinyFeed YouTube Aggregator</title>
+        <link rel="icon" href="{{ url_for('static', filename='images/favicon.svg') }}">
+        <!---->
+        <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/style.css') }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/loader.css') }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/balloon.min.css') }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/jquery.modal.min.css') }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/font-awesome.min.css') }}" />
+        <!---->
+        <script src="{{ url_for('static', filename='scripts/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='scripts/jquery.modal.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='scripts/script.js') }}"></script>
+    </head>
+    <body>
+        <div id="add-source-modal" class="modal">
+            <p>Add a video source by channel/playlist ID</p>
+            <p><input id="source-id" type="text" /></p>
+            <button class="custom-button" onclick="addVideoSource();">Add Source</button>
+            <p> </p>
+        </div>
+        <div id="info-messages-modal" class="modal">
+            <p id="message-container"></p>
+        </div>
+        <div id="loading-modal" class="modal">
+            <div class="loading-anim">Loading</div>
+        </div>
+        <div id="confirmation-modal" class="modal">
+            <p id="query-container"></p>
+            <hr>
+            <button id="reject-btn" class="custom-button">No</button>
+            <button id="accept-btn" class="custom-button">Yes</button>
+            <p> </p>
+        </div>
+        <div class="sidebar">
+            <ul class="icon-wrapper">
+                <li class="responsive-icon" data-tooltip="Home">
+                    <a href="/">
+                        <img src="{{ url_for('static', filename='images/home.png') }}" />
+                    </a>
+                </li>
+                {% for entry in sources %}
+                <li class="responsive-icon" data-tooltip="{{ entry['sourceName'] }}">
+                    <a href="javascript:loadVideosOf('{{ entry['sourceID'] }}');">
+                        <img src="{{ entry['channelIcon'] }}" />
+                    </a>
+                </li>
+                {% endfor %}
+                <li class="responsive-icon" data-tooltip="Add Source">
+                    <a href="javascript:openAddSourceModal();">
+                        <img src="{{ url_for('static', filename='images/newsource.png') }}" />
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="page">
+            <div class="header">
+                <span>TinyFeed</span>
+                <!---->
+                <div class="search-bar">
+                    <i class="search-icon fa fa-search" onclick="searchFocus();"></i>
+                    <input id="search-text" type="text" placeholder="Search" onkeyup="filterSources();"></input>
+                    <i class="clear-icon fa fa-times-circle" onclick="clearSearch();"></i>
+                </div>
+                <!---->
+                <div class="filter">
+                    <button class="menu">Day Filter</button>
+                    <div class="menu-content">
+                        <a href="javascript:filterVideos(30);">1 day</a>
+                        <a href="javascript:filterVideos(78);">3 days</a>
+                        <a href="javascript:filterVideos(126);">5 days</a>
+                        <a href="javascript:filterVideos(174);">1 week</a>
+                        <a href="javascript:filterVideos(340);">2 weeks</a>
+                        <a href="javascript:filterVideos(678);">4 weeks</a>
+                    </div>
+                </div>
+                <div class="filter">
+                    <button class="menu">Hour Filter</button>
+                    <div class="menu-content">
+                        <a href="javascript:filterVideos(2);">2 hours</a>
+                        <a href="javascript:filterVideos(6);">6 hours</a>
+                        <a href="javascript:filterVideos(12);">12 hours</a>
+                        <a href="javascript:filterVideos(22);">22 hours</a>
+                    </div>
+                </div>
+                <div id="clear-filter">
+                    <button onclick="clearFilter();">Clear Filter</button>
+                </div>
+                <!---->
+                <div class="source-action" aria-label="Check for new videos" data-balloon-pos="down">
+                    <a href="javascript:getLatestVideos();"><i class="fa fa-refresh"></i></a>
+                    <input id="current-source" type="text" value="home" />
+                </div>
+                <div class="source-action" aria-label="Delete this video source" data-balloon-pos="down">
+                    <a href="javascript:deleteVideoSource();"><i class="fa fa-trash"></i></a>
+                </div>
+                <div class="source-action" aria-label="Redownload this video source's feed" data-balloon-pos="down" style="margin-top: 2px;">
+                    <a href="javascript:downloadVideoSource();"><i class="fa fa-download"></i></a>
+                </div>
+                <div id="colourmode-toggle" class="source-action" aria-label="Toggle dark mode" data-balloon-pos="down">
+                    <a href="javascript:toggleColourMode();"><svg><use xlink:href="{{ url_for('static', filename='images/colourmode.svg') }}#colour-mode-toggle"></use></svg></a>
+                </div>
+            </div>
+            <div class="content">
+                {% if not datadict %}
+                <div class="empty-state">
+                    <img src="{{ url_for('static', filename='images/emptystate.png') }}" />
+                    <span>Hmmm, there aren't any new videos at the moment, make sure to check back later<span>
+                    <!--<span>P/S: If you haven't added video sources yet, that might be the reason</span>-->
+                </div>
+                {% endif %}
+                {% for key in datadict %}
+                <div class="source-content">
+                    <div class="source-name">
+                        <a href="{{ datadict[key]['sourceURL'] }}" target="_blank">
+                            <img src="{{ datadict[key]['channelIcon'][0] }}" />
+                            <span>{{ datadict[key]['sourceName'] }}</span>
+                        </a>
+                    </div>
+                    <hr>
+                    <div class="video-grid">
+                        {% for entry in datadict[key]['entries'] %}
+                        <a class="video-container" href="{{ entry['url'] }}" target="_blank">
+                            <div class="video-thumbnail">
+                                <img src="{{ entry['thumbnail'] }}" onmouseover="showPreview(this);" onmouseout="hidePreview(this);" />
+                                <span class="video-duration">{{ entry['duration'] }}</span>
+                            </div>
+                            <div class="video-info">
+                                <b class="video-title" title="{{ entry['title'] }}">{{ entry['title'] }}</b>
+                                <span>{{ entry['views'] }} views&nbsp;&nbsp;•&nbsp;&nbsp;{{ fancyDate(entry['published']) }}</span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </body>
+</html>
