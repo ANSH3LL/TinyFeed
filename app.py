@@ -13,16 +13,17 @@ dataobj.initialize()
 feedobj = tinyfeed.TinyFeed()
 
 def latestvideos():
+    marked = []
     sample = dataobj.needUpdate()
     if sample:
-        datadict = feedobj.processSources(sample, dataobj.storedict)
-        dataobj.store(datadict)
-    else:
-        datadict = copy.deepcopy(dataobj.storedict)
-    for sourceID in datadict.keys():
-        latest = feedobj.filterEntries(datadict[sourceID]['entries'], 100)
-        if not latest: del datadict[sourceID]
-        else: datadict[sourceID]['entries'] = latest
+        updated = feedobj.processSources(sample, dataobj.storedict)
+        dataobj.store(updated)
+    datadict = copy.deepcopy(dataobj.storedict)
+    for sourceID in datadict:
+        newvideos = feedobj.filterEntries(datadict[sourceID]['entries'], 100)
+        if not newvideos: marked.append(sourceID)
+        else: datadict[sourceID]['entries'] = newvideos
+    for sourceID in marked: del datadict[sourceID]
     return datadict
 
 @app.context_processor
