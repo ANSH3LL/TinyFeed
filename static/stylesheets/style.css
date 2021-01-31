@@ -15,7 +15,6 @@
     --placeholder-color: #717171;
     --modal-bg-color: rgba(0, 0, 0, .75);
     --balloon-color: rgba(16, 16, 16, .95);
-    --duration-background: rgba(0, 0, 0, .9);
     --menu-bg-color: rgba(255, 255, 255, .97);
 }
 
@@ -34,7 +33,6 @@
     --menu-bg-color: rgba(0, 0, 0, .97);
     --modal-bg-color: rgba(88, 88, 88, .75);
     --balloon-color: rgba(239, 239, 239, .95);
-    --duration-background: rgba(255, 255, 255, .9);
 }
 
 body {
@@ -404,16 +402,16 @@ body:not(.tab-key-used) :focus {
 .video-duration {
     right: 0;
     bottom: 0;
+    color: #fff;
     margin: 5px;
     font-size: 14px;
     line-height: 9px;
     position: absolute;
     border-radius: 2px;
     letter-spacing: 1px;
-    color: var(--bg-color);
     padding: 3px 2px 5px 3px;
-    background: var(--duration-background);
-    box-shadow: 0px 0px 15px -5px var(--bg-color);
+    background: rgba(0, 0, 0, .9);
+    box-shadow: 0px 0px 15px -5px #fff;
 }
 
 .video-title {
