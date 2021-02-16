@@ -41,6 +41,7 @@ All limitations resultant of the youtube channel and playlist rss/atom feed affe
 
 ### Credits
 Part of the app icon/favicon came from [svgrepo.com](https://www.svgrepo.com)
+
 Empty state icon made by [Freepik](https://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/)
 
 ### License

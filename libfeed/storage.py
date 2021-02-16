@@ -5,11 +5,11 @@ class DataStore(object):
         self.storepath = storepath
         self.storedict = {}
 
-    def _isTooOld(self, datestr, threshold = 2):
+    def _isTooOld(self, datestr, threshold = 1):
         newdate = datetime.datetime.utcnow()
         olddate = datetime.datetime.strptime(datestr, utils.dfmt)
         difference = (newdate - olddate).days
-        if difference > threshold: return True
+        if difference >= threshold: return True
         else: return False
 
     def initialize(self):
