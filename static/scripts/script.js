@@ -110,6 +110,7 @@ function showPreview(target) {
     window.currentThumbnailURL = target.src;
     var domain = chunks[2]; var videoID = chunks[4];
     window.currentIntervalObj = setInterval(function() {
+        target.parentElement.querySelector('.video-duration').style.display = 'none';
         target.src = `https://${domain}/vi/${videoID}/mq${currentIndex}.jpg`;
         currentIndex = (currentIndex === 3)? 1: ++currentIndex;
     }, 1000);
@@ -121,6 +122,7 @@ function hidePreview(target) {
         target.src = window.currentThumbnailURL;
         window.currentThumbnailURL = '';
     }
+    target.parentElement.querySelector('.video-duration').style.display = 'block';
 }
 
 function dqEscape(string) {
