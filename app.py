@@ -35,8 +35,8 @@ def ctxtprocessor():
 @app.errorhandler(Exception)
 def error_handler(error):
     return jsonify({'success': False,
-                    'details': '{}'.format(error),
-                    'code': error.code if hasattr(error, 'code') else None
+                    'code': error.code if hasattr(error, 'code') else None,
+                    'details': '{}: {}'.format(error.__class__.__name__, error)
                     })
 
 @app.route('/addfeed', methods = ['POST'])

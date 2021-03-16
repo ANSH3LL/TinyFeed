@@ -41,7 +41,7 @@ class TinyFeed(object):
         for entry in entries:
             published = self.parseDate(entry['published'])
             difference = (filterobj - published).total_seconds()
-            if difference < seconds: filtered.append(entry)
+            if difference <= seconds: filtered.append(entry)
         return filtered
 
     def videoDuration(self, url):
@@ -137,10 +137,22 @@ class TinyFeed(object):
         #
         return stub
 
+    def newViewCount(self, dictobj, index):
+        entry = dictobj['feed']['entry'][index]
+        mediacommunity = entry['media:group']['media:community']
+        return self.formatViews(mediacommunity['media:statistics']['@views'])
+
     def updateFeed(self, oldfeed, newfeed):
-        ix = 0
+        ix = ix2 = 0
         container = []
         oldids, newids = [], []
+        #
+        #fix for cases where video source has no videos
+        if not newfeed['feed'].get('entry'): return None
+        #fix for cases where video source only has one video
+        if isinstance(newfeed['feed']['entry'], dict):
+            newfeed['feed']['entry'] = [newfeed['feed']['entry']]
+        #
         for entry in oldfeed['entries']:
             oldids.append(entry['url'][32:])
         for entry in newfeed['feed']['entry']:
@@ -150,11 +162,16 @@ class TinyFeed(object):
             if oldids[x] not in newids:
                 oldfeed['entries'].pop(x + ix)
                 ix -= 1 #avoid IndexErrors
-        #find and add any new videos since we last checked
+        #find and add any new videos since we last checked + update view counts and video durations if needed
         for x in xrange(len(newids)):
             if newids[x] not in oldids:
                 container.append(self.parseLite(newfeed, x))
-            else: break
+            else:
+                entry = oldfeed['entries'][ix2]
+                if entry['duration'] == '00:00':
+                    entry['duration'] = self.videoDuration(entry['url'])
+                entry['views'] = self.newViewCount(newfeed, x)
+                ix2 += 1
         oldfeed['entries'] = container + oldfeed['entries']
 
     def processSource(self, sourceID, oldfeed = None):
