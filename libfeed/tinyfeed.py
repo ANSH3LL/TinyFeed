@@ -6,7 +6,8 @@ class TinyFeed(object):
         self.feedurl = 'https://www.youtube.com/feeds/videos.xml'
         self.playlisturl = 'https://www.youtube.com/playlist?list={}'
         self.channelurl = 'https://www.youtube.com/channel/{}/videos'
-        self.timePattern = re.compile(r'videoDurationSeconds\\\":\\\"([0-9]+)')
+        self.timePattern1 = re.compile(r'\"lengthSeconds\":\"([0-9]+)\"')
+        self.timePattern2 = re.compile(r'videoDurationSeconds\\\":\\\"([0-9]+)')
         self.iconPattern = re.compile(r'https://yt3\.ggpht\.com/ytc/[a-zA-Z0-9-_]+=s')
 
     def formatDate(self, datestr):
@@ -48,7 +49,16 @@ class TinyFeed(object):
         embedURL = url.replace('watch?v=', 'embed/')
         res = requests.get(embedURL, headers = utils.UAFirefox)
         if res.status_code == 200:
-            try: seconds = self.timePattern.search(res.content).group(1)
+            try: seconds = self.timePattern2.search(res.content).group(1)
+            except AttributeError: return self.videoDuration_(url)
+            except: return '00:00'
+        else: return '00:00'
+        return self.formatTime(int(seconds))
+
+    def videoDuration_(self, url):
+        res = requests.get(url, headers = utils.UAFirefox)
+        if res.status_code == 200:
+            try: seconds = self.timePattern1.search(res.content).group(1)
             except: return '00:00'
         else: return '00:00'
         return self.formatTime(int(seconds))
