@@ -8,7 +8,8 @@ class TinyFeed(object):
         self.channelurl = 'https://www.youtube.com/channel/{}/videos'
         self.timePattern1 = re.compile(r'\"lengthSeconds\":\"([0-9]+)\"')
         self.timePattern2 = re.compile(r'videoDurationSeconds\\\":\\\"([0-9]+)')
-        self.iconPattern = re.compile(r'https://yt3\.ggpht\.com/ytc/[a-zA-Z0-9-_]+=s')
+        self.iconPattern1 = re.compile(r'https://yt3\.ggpht\.com/ytc/[a-zA-Z0-9-_]+=s')
+        self.iconPattern2 = re.compile(r'https://yt[0-9]\.ggpht\.com/[a-zA-Z0-9-_]+=s')
 
     def formatDate(self, datestr):
         dateobj = self.parseDate(datestr)
@@ -67,9 +68,18 @@ class TinyFeed(object):
         icons = []
         res = requests.get(url, headers = utils.UAChrome)
         if res.status_code == 200:
-            try: iconurl = self.iconPattern.search(res.content).group()
+            try: iconurl = self.iconPattern1.search(res.content).group()
+            except AttributeError: return self.extractIcon_(res.content, iconsizes)
             except: return ['', '']
         else: return ['', '']
+        for size in iconsizes:
+            icons.append(iconurl + str(size))
+        return icons
+
+    def extractIcon_(self, content, iconsizes):
+        icons = []
+        try: iconurl = self.iconPattern2.search(content).group()
+        except: return ['', '']
         for size in iconsizes:
             icons.append(iconurl + str(size))
         return icons
