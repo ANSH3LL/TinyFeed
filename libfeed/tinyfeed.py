@@ -200,7 +200,7 @@ class TinyFeed(object):
         if resobj.status_code == 200:
             data = self.feedToDict(resobj.content)
         else:
-            raise RuntimeError, 'Unexpected response: {}'.format(resobj.status_code)
+            raise RuntimeError, 'Unexpected response: {} Source ID: {}'.format(resobj.status_code, sourceID)
         if oldfeed:
             self.updateFeed(oldfeed[sourceID], data)
             oldfeed[sourceID]['lastUpdated'] = datetime.datetime.utcnow().strftime(utils.dfmt)
