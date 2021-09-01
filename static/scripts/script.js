@@ -2,6 +2,7 @@ var sourceNamesArray = [];
 var currentThumbnailURL = '';
 var searchConstrained = false;
 var currentIntervalObj = null;
+var currentTimeoutObj = null;
 var currentColourMode = localStorage.getItem('colourMode');
 
 //This has to happen as early as possible to prevent a flicker of light mode on load when in dark mode
@@ -105,24 +106,36 @@ function filterSources() {
 }
 
 function showPreview(target) {
-    var currentIndex = 1;
-    var chunks = target.src.split('/');
-    window.currentThumbnailURL = target.src;
-    var domain = chunks[2]; var videoID = chunks[4];
-    window.currentIntervalObj = setInterval(function() {
-        target.parentElement.querySelector('.video-duration').style.display = 'none';
-        target.src = `https://${domain}/vi/${videoID}/mq${currentIndex}.jpg`;
-        currentIndex = (currentIndex === 3)? 1: ++currentIndex;
-    }, 1000);
+    var preview = target.dataset.preview;
+    if(preview != '') {
+        window.currentThumbnailURL = target.src;
+        window.currentTimeoutObj = setTimeout(function() {
+            target.parentElement.querySelector('.video-duration').style.display = 'none';
+            target.src = preview;
+        }, 1000);
+    } else {
+        var currentIndex = 1;
+        var chunks = target.src.split('/');
+        window.currentThumbnailURL = target.src;
+        var domain = chunks[2]; var videoID = chunks[4];
+        window.currentIntervalObj = setInterval(function() {
+            target.parentElement.querySelector('.video-duration').style.display = 'none';
+            target.src = `https://${domain}/vi/${videoID}/mq${currentIndex}.jpg`;
+            currentIndex = (currentIndex === 3)? 1: ++currentIndex;
+        }, 1000);
+    }
 }
 
 function hidePreview(target) {
     if(window.currentIntervalObj != null) {
         clearInterval(window.currentIntervalObj);
-        target.src = window.currentThumbnailURL;
-        window.currentThumbnailURL = '';
+    }
+    if(window.currentTimeoutObj != null) {
+        clearTimeout(window.currentTimeoutObj);
     }
     target.parentElement.querySelector('.video-duration').style.display = 'block';
+    target.src = window.currentThumbnailURL;
+    window.currentThumbnailURL = '';
 }
 
 function dqEscape(string) {
@@ -187,7 +200,7 @@ function loadVideosOf(sourceID, isUpdate = false, filterBy = 0) {
                 var html2 = `
                     <a class="video-container" href="${data.entries[i].url}" target="_blank">
                         <div class="video-thumbnail">
-                            <img src="${data.entries[i].thumbnail}" onmouseover="showPreview(this);" onmouseout="hidePreview(this);" />
+                            <img src="${data.entries[i].thumbnail}" onmouseover="showPreview(this);" onmouseout="hidePreview(this);" data-preview="${data.entries[i].preview}" />
                             <span class="video-duration">${data.entries[i].duration}</span>
                         </div>
                         <div class="video-info">

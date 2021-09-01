@@ -125,7 +125,7 @@
                         {% for entry in datadict[key]['entries'] %}
                         <a class="video-container" href="{{ entry['url'] }}" target="_blank">
                             <div class="video-thumbnail">
-                                <img src="{{ entry['thumbnail'] }}" onmouseover="showPreview(this);" onmouseout="hidePreview(this);" />
+                                <img src="{{ entry['thumbnail'] }}" onmouseover="showPreview(this);" onmouseout="hidePreview(this);" data-preview="{{ entry['preview'] }}" />
                                 <span class="video-duration">{{ entry['duration'] }}</span>
                             </div>
                             <div class="video-info">

@@ -10,6 +10,8 @@ class TinyFeed(object):
         self.timePattern2 = re.compile(r'videoDurationSeconds\\\":\\\"([0-9]+)')
         self.iconPattern1 = re.compile(r'https://yt3\.ggpht\.com/ytc/[a-zA-Z0-9-_]+=s')
         self.iconPattern2 = re.compile(r'https://yt[0-9]\.ggpht\.com/[a-zA-Z0-9-_]+=s')
+        self.vpidPattern1 = re.compile(r'https://i[0-9]*.ytimg.com/an_webp/([a-zA-Z0-9]+)')
+        self.prevPattern1 = re.compile(r'[\"|\'](https://i[0-9]*.ytimg.com/an_webp/[a-zA-Z0-9]+/.*?)[\"|\']')
 
     def formatDate(self, datestr):
         dateobj = self.parseDate(datestr)
@@ -84,6 +86,18 @@ class TinyFeed(object):
             icons.append(iconurl + str(size))
         return icons
 
+    def extractPreviews(self, sourceID):
+        res = requests.get(self.channelurl.format(sourceID), headers = utils.UAChrome)
+        if res.status_code == 200:
+            return [x.replace('\u0026', '&') for x in self.prevPattern1.findall(res.content)]
+        else: return []
+
+    def extractPreview(self, videoID, previews):
+        for preview in previews:
+            if self.vpidPattern1.match(preview).group(1) == videoID:
+                return preview
+        return ''
+
     def downloadFeed(self, sourceID, playlist = False):
         if playlist: parameters = {'playlist_id': sourceID}
         else: parameters = {'channel_id': sourceID}
@@ -106,7 +120,7 @@ class TinyFeed(object):
         else: raise RuntimeError, 'Unknown source type: {}'.format(sourceType)
         return sourceURL#, sourceType
 
-    def parseFeed(self, dictobj):
+    def parseFeed(self, dictobj, previews):
         data = {'entries': []}
         feed = dictobj['feed']
         sourceInfo = self.parseSource(feed['id'])
@@ -134,6 +148,7 @@ class TinyFeed(object):
             stub['url'] = self.url.format(entry['yt:videoId'])
             stub['duration'] = self.videoDuration(stub['url'])
             #stub['description'] = unicode(mediagroup['media:description'])
+            stub['preview'] = self.extractPreview(entry['yt:videoId'], previews)
             #stub['rating'] = float(mediacommunity['media:starRating']['@average'])
             stub['views'] = self.formatViews(mediacommunity['media:statistics']['@views'])
             stub['thumbnail'] = mediagroup['media:thumbnail']['@url'].replace('hqdefault', 'mqdefault')#maxresdefault is unreliable
@@ -141,7 +156,7 @@ class TinyFeed(object):
             data['entries'].append(stub)
         return data
 
-    def parseLite(self, dictobj, index):
+    def parseLite(self, dictobj, index, previews):
         stub = {}
         entry = dictobj['feed']['entry'][index]
         #
@@ -152,6 +167,7 @@ class TinyFeed(object):
         stub['title'] = unicode(mediagroup['media:title'])
         stub['url'] = self.url.format(entry['yt:videoId'])
         stub['duration'] = self.videoDuration(stub['url'])
+        stub['preview'] = self.extractPreview(entry['yt:videoId'], previews)
         stub['views'] = self.formatViews(mediacommunity['media:statistics']['@views'])
         stub['thumbnail'] = mediagroup['media:thumbnail']['@url'].replace('hqdefault', 'mqdefault')
         #
@@ -162,7 +178,11 @@ class TinyFeed(object):
         mediacommunity = entry['media:group']['media:community']
         return self.formatViews(mediacommunity['media:statistics']['@views'])
 
-    def updateFeed(self, oldfeed, newfeed):
+    def newTitle(self, dictobj, index):
+        entry = dictobj['feed']['entry'][index]
+        return unicode(entry['media:group']['media:title'])
+
+    def updateFeed(self, oldfeed, newfeed, previews):
         ix = ix2 = 0
         container = []
         oldids, newids = [], []
@@ -185,12 +205,13 @@ class TinyFeed(object):
         #find and add any new videos since we last checked + update view counts and video durations if needed
         for x in xrange(len(newids)):
             if newids[x] not in oldids:
-                container.append(self.parseLite(newfeed, x))
+                container.append(self.parseLite(newfeed, x, previews))
             else:
                 entry = oldfeed['entries'][ix2]
                 if entry['duration'] == '00:00':
                     entry['duration'] = self.videoDuration(entry['url'])
                 entry['views'] = self.newViewCount(newfeed, x)
+                entry['title'] = self.newTitle(newfeed, x)
                 ix2 += 1
         oldfeed['entries'] = container + oldfeed['entries']
 
@@ -199,13 +220,14 @@ class TinyFeed(object):
         resobj = self.downloadFeed(sourceID, playlist)
         if resobj.status_code == 200:
             data = self.feedToDict(resobj.content)
+            previews = [] if playlist else self.extractPreviews(sourceID)
         else:
             raise RuntimeError, 'Unexpected response: {} Source ID: {}'.format(resobj.status_code, sourceID)
         if oldfeed:
-            self.updateFeed(oldfeed[sourceID], data)
+            self.updateFeed(oldfeed[sourceID], data, previews)
             oldfeed[sourceID]['lastUpdated'] = datetime.datetime.utcnow().strftime(utils.dfmt)
             return oldfeed[sourceID]
-        return self.parseFeed(data)
+        return self.parseFeed(data, previews)
 
     def processSources(self, sourceIDs, oldfeed = None):
         masterdict = {}
