@@ -210,6 +210,7 @@ class TinyFeed(object):
                 entry = oldfeed['entries'][ix2]
                 if entry['duration'] == '00:00':
                     entry['duration'] = self.videoDuration(entry['url'])
+                entry['preview'] = self.extractPreview(entry['url'][32:], previews)
                 entry['views'] = self.newViewCount(newfeed, x)
                 entry['title'] = self.newTitle(newfeed, x)
                 ix2 += 1
