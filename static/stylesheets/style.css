@@ -5,7 +5,6 @@
     --fg-color: #000;
     --bg-color: #fff;
     --input-color: #756f6f;
-    --fringes-color: #f9f9f9;
     --spinner-bg-color: #111;
     --search-bg-color: #f2f2f2;
     --balloon-text-color: #fff;
@@ -15,6 +14,7 @@
     --placeholder-color: #717171;
     --modal-bg-color: rgba(0, 0, 0, .75);
     --balloon-color: rgba(16, 16, 16, .95);
+    --fringes-color: rgba(249, 249, 249, .95);
     --menu-bg-color: rgba(255, 255, 255, .97);
 }
 
@@ -22,7 +22,7 @@
     --bg-color: #000;
     --fg-color: #ebebeb;
     --input-color: #8a9090;
-    --fringes-color: #060606;
+    
     --spinner-bg-color: #eee;
     --search-bg-color: #323232;
     --balloon-text-color: #000;
@@ -31,6 +31,7 @@
     --responsive-color: #cacaca;
     --placeholder-color: #8e8e8e;
     --menu-bg-color: rgba(0, 0, 0, .97);
+    --fringes-color: rgba(6, 6, 6, 0.95);
     --modal-bg-color: rgba(88, 88, 88, .75);
     --balloon-color: rgba(239, 239, 239, .95);
 }

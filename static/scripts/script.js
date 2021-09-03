@@ -105,13 +105,18 @@ function filterSources() {
     searchConstrained = true;
 }
 
-function showPreview(target) {
+function showPreview(target, force = false) {
     var preview = target.dataset.preview;
-    if(preview != '') {
+    if(preview != '' && !force) {
         window.currentThumbnailURL = target.src;
         window.currentTimeoutObj = setTimeout(function() {
             target.parentElement.querySelector('.video-duration').style.display = 'none';
             target.src = preview;
+            target.onload = function(e) {
+                if(target.naturalWidth == 120 && target.naturalHeight == 90) {
+                    fallbackPreview(target);
+                }
+            }
         }, 1000);
     } else {
         var currentIndex = 1;
@@ -136,6 +141,11 @@ function hidePreview(target) {
     target.parentElement.querySelector('.video-duration').style.display = 'block';
     target.src = window.currentThumbnailURL;
     window.currentThumbnailURL = '';
+}
+
+function fallbackPreview(target) {
+    hidePreview(target);
+    showPreview(target, true);
 }
 
 function dqEscape(string) {
