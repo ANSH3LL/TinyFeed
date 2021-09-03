@@ -10,8 +10,8 @@ class TinyFeed(object):
         self.timePattern2 = re.compile(r'videoDurationSeconds\\\":\\\"([0-9]+)')
         self.iconPattern1 = re.compile(r'https://yt3\.ggpht\.com/ytc/[a-zA-Z0-9-_]+=s')
         self.iconPattern2 = re.compile(r'https://yt[0-9]\.ggpht\.com/[a-zA-Z0-9-_]+=s')
-        self.vpidPattern1 = re.compile(r'https://i[0-9]*.ytimg.com/an_webp/([a-zA-Z0-9]+)')
-        self.prevPattern1 = re.compile(r'[\"|\'](https://i[0-9]*.ytimg.com/an_webp/[a-zA-Z0-9]+/.*?)[\"|\']')
+        self.vpidPattern1 = re.compile(r'https://i[0-9]*.ytimg.com/an_webp/([a-zA-Z0-9-_]+)')
+        self.prevPattern1 = re.compile(r'[\"|\'](https://i[0-9]*.ytimg.com/an_webp/[a-zA-Z0-9-_]+/.*?)[\"|\']')
 
     def formatDate(self, datestr):
         dateobj = self.parseDate(datestr)
@@ -96,7 +96,7 @@ class TinyFeed(object):
         for preview in previews:
             if self.vpidPattern1.match(preview).group(1) == videoID:
                 return preview
-        return ''
+        else: return ''
 
     def downloadFeed(self, sourceID, playlist = False):
         if playlist: parameters = {'playlist_id': sourceID}
