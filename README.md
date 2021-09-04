@@ -13,6 +13,7 @@ A lightweight, easy to use youtube channel & playlist feed aggregator
 ### Dependencies
 - Python 2.7 (pending update to python 3)
 - Flask
+- Requests
 
 ### Usage
 1. Clone the repository
