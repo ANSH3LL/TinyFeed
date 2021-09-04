@@ -40,9 +40,9 @@ javascript: for (var arrScripts = document.getElementsByTagName('script'), i = 0
 All limitations resultant of the youtube channel and playlist rss/atom feed affect TinyFeed and may impede its proper functioning in certain cases.
 
 ### Credits
-Part of the app icon/favicon came from [svgrepo.com](https://www.svgrepo.com)
-
-Empty state icon made by [Freepik](https://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/)
+- Part of the app icon/favicon came from [svgrepo.com](https://www.svgrepo.com)
+- Empty state icon made by [Freepik](https://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/)
+- Xmltodict library by [martinblech](https://github.com/martinblech/xmltodict)
 
 ### License
 This project is released under the GPL-3.0 license. See the included license file.
