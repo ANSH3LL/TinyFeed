@@ -44,5 +44,10 @@ All limitations resultant of the youtube channel and playlist rss/atom feed affe
 - Empty state icon made by [Freepik](https://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/)
 - Xmltodict library by [martinblech](https://github.com/martinblech/xmltodict)
 
+### Screenshots
+![Light mode](https://i.imgur.com/8P9w1r5.png)
+
+![Dark mode](https://i.imgur.com/FNCKMMJ.png)
+
 ### License
 This project is released under the GPL-3.0 license. See the included license file.
