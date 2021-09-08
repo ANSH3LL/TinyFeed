@@ -125,6 +125,10 @@ body:not(.tab-key-used) :focus {
     overflow: hidden scroll;
 }
 
+.icon-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
 .responsive-icon {
     --top-offset: 0px;
     margin-bottom: 5px;
