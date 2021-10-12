@@ -209,7 +209,7 @@ class TinyFeed(object):
                 container.append(self.parseLite(newfeed, x, previews))
             else:
                 entry = oldfeed['entries'][ix2]
-                if entry['duration'] == '00:00':
+                if entry['duration'] in ['00:00', 'LIVE']:
                     entry['duration'] = self.videoDuration(entry['url'])
                 entry['preview'] = self.extractPreview(entry['url'][32:], previews)
                 entry['views'] = self.newViewCount(newfeed, x)
