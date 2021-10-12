@@ -207,18 +207,34 @@ function loadVideosOf(sourceID, isUpdate = false, filterBy = 0) {
                 <div class="video-grid">
             `
             for(var i = 0; i < data.entries.length; i++) {
-                var html2 = `
-                    <a class="video-container" href="${data.entries[i].url}" target="_blank">
-                        <div class="video-thumbnail">
-                            <img src="${data.entries[i].thumbnail}" onmouseover="showPreview(this);" onmouseout="hidePreview(this);" data-preview="${data.entries[i].preview}" />
-                            <span class="video-duration">${data.entries[i].duration}</span>
-                        </div>
-                        <div class="video-info">
-                            <b class="video-title" title="${dqEscape(data.entries[i].title)}">${data.entries[i].title}</b>
-                            <span>${data.entries[i].views} views&nbsp;&nbsp;•&nbsp;&nbsp;${data.entries[i].published}</span>
-                        </div>
-                    </a>
-                `
+                if(data.entries[i].duration == 'LIVE') {
+                    var html2 = `
+                        <a class="video-container" href="${data.entries[i].url}" target="_blank">
+                            <div class="video-thumbnail">
+                                <img src="${data.entries[i].thumbnail}" onmouseover="showPreview(this);" onmouseout="hidePreview(this);" data-preview="${data.entries[i].preview}" />
+                                <span style="background: rgba(204, 0, 0, .9) !important; padding-right: 5px !important; padding-left: 5px !important;" class="video-duration">${data.entries[i].duration}</span>
+                            </div>
+                            <div class="video-info">
+                                <b class="video-title" title="${dqEscape(data.entries[i].title)}">${data.entries[i].title}</b>
+                                <span>${data.entries[i].views} views&nbsp;&nbsp;•&nbsp;&nbsp;${data.entries[i].published}</span>
+                            </div>
+                        </a>
+                    `
+                } else {
+                    var html2 = `
+                        <a class="video-container" href="${data.entries[i].url}" target="_blank">
+                            <div class="video-thumbnail">
+                                <img src="${data.entries[i].thumbnail}" onmouseover="showPreview(this);" onmouseout="hidePreview(this);" data-preview="${data.entries[i].preview}" />
+                                <span class="video-duration">${data.entries[i].duration}</span>
+                            </div>
+                            <div class="video-info">
+                                <b class="video-title" title="${dqEscape(data.entries[i].title)}">${data.entries[i].title}</b>
+                                <span>${data.entries[i].views} views&nbsp;&nbsp;•&nbsp;&nbsp;${data.entries[i].published}</span>
+                            </div>
+                        </a>
+                    `
+                }
+                
                 html += html2;
             }
             html += `

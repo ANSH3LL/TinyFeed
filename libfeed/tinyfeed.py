@@ -52,6 +52,7 @@ class TinyFeed(object):
         embedURL = url.replace('watch?v=', 'embed/')
         res = requests.get(embedURL, headers = utils.UAFirefox)
         if res.status_code == 200:
+            if 'live.jpg' in res.content: return 'LIVE' #hacky and poorly tested, but seems to work
             try: seconds = self.timePattern2.search(res.content).group(1)
             except AttributeError: return self.videoDuration_(url)
             except: return '00:00'
