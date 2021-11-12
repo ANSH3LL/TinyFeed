@@ -207,7 +207,7 @@ function loadVideosOf(sourceID, isUpdate = false, filterBy = 0) {
                 <div class="video-grid">
             `
             for(var i = 0; i < data.entries.length; i++) {
-                if(data.entries[i].ratio == 'Like/Dislike count unavailable') {
+                if(data.entries[i].ratio == 'Rating unavailable') {
                     if(data.entries[i].duration == 'LIVE') {
                         var html2 = `
                             <a class="video-container" href="${data.entries[i].url}" target="_blank">
@@ -217,7 +217,7 @@ function loadVideosOf(sourceID, isUpdate = false, filterBy = 0) {
                                 </div>
                                 <div class="rating-bar" aria-label="${data.entries[i].ratio}" data-balloon-pos="down">
                                     <div class="dislikes">
-                                        <div class="likes" style="width:100%; background: #5c5c5c;"></div>
+                                        <div class="likes" style="width:100%; background: var(--unavailable-color);"></div>
                                     </div>
                                 </div>
                                 <div class="video-info">
@@ -235,7 +235,7 @@ function loadVideosOf(sourceID, isUpdate = false, filterBy = 0) {
                                 </div>
                                 <div class="rating-bar" aria-label="${data.entries[i].ratio}" data-balloon-pos="down">
                                 <div class="dislikes">
-                                    <div class="likes" style="width:100%; background: #5c5c5c;"></div>
+                                    <div class="likes" style="width:100%; background: var(--unavailable-color);"></div>
                                 </div>
                             </div>
                                 <div class="video-info">

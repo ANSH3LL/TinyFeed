@@ -134,8 +134,8 @@
                             </div>
                             <div class="rating-bar" aria-label="{{ entry['ratio'] }}" data-balloon-pos="down">
                                 <div class="dislikes">
-                                    {% if entry['ratio'] == 'Like/Dislike count unavailable' %}
-                                    <div class="likes" style="width:100%; background: #5c5c5c;"></div>
+                                    {% if entry['ratio'] == 'Rating unavailable' %}
+                                    <div class="likes" style="width:100%; background: var(--unavailable-color);"></div>
                                     {% else %}
                                     <div class="likes" style="width:{{ entry['rating'] }}%;"></div>
                                     {% endif %}

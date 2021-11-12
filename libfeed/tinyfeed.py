@@ -34,6 +34,9 @@ class TinyFeed(object):
         stub = denominations[magnitude]
         return num + stub
 
+    def formatRatings(self, likes, dislikes):
+        return '{:,} / {:,}'.format(likes, dislikes)
+
     def parseDate(self, datestr, tzoffset = 0):
         dateobj = datetime.datetime.strptime(datestr, utils.dfmt)
         return dateobj + datetime.timedelta(minutes = tzoffset)
@@ -142,25 +145,25 @@ class TinyFeed(object):
             stub = {}
             mediagroup = entry['media:group']
             mediacommunity = mediagroup['media:community']
+            totalratings = int(mediacommunity['media:starRating']['@count'])
+            starrating = float(mediacommunity['media:starRating']['@average']) - 1
             #
-            #stub['updated'] = entry['updated']
             stub['published'] = entry['published']
+            stub['rating'] = round(starrating * 25, 2)
             stub['title'] = unicode(mediagroup['media:title'])
             stub['url'] = self.url.format(entry['yt:videoId'])
             stub['duration'] = self.videoDuration(stub['url'])
-            #stub['description'] = unicode(mediagroup['media:description'])
             stub['preview'] = self.extractPreview(entry['yt:videoId'], previews)
-            #
-            stub['rating'] = float(mediacommunity['media:starRating']['@average']) * 20#likes percentage
-            likes = int(stub['rating'] * 0.01 * int(mediacommunity['media:starRating']['@count']))
-            dislikes = int(mediacommunity['media:starRating']['@count']) - likes
-            if likes == dislikes == 0:
-                stub['ratio'] = 'Like/Dislike count unavailable'
-            else:
-                stub['ratio'] = '{0} | {1}'.format(self.formatViews(likes), self.formatViews(dislikes))#likes to dislikes
-            #
             stub['views'] = self.formatViews(mediacommunity['media:statistics']['@views'])
-            stub['thumbnail'] = mediagroup['media:thumbnail']['@url'].replace('hqdefault', 'mqdefault')#maxresdefault is unreliable
+            stub['thumbnail'] = mediagroup['media:thumbnail']['@url'].replace('hqdefault', 'mqdefault')
+            #
+            likes = int(round(starrating * 0.25 * totalratings))
+            dislikes = totalratings - likes
+            #
+            if likes + dislikes > 0:
+                stub['ratio'] = self.formatRatings(likes, dislikes)
+            else:
+                stub['ratio'] = 'Rating unavailable'
             #
             data['entries'].append(stub)
         return data
@@ -171,8 +174,11 @@ class TinyFeed(object):
         #
         mediagroup = entry['media:group']
         mediacommunity = mediagroup['media:community']
+        totalratings = int(mediacommunity['media:starRating']['@count'])
+        starrating = float(mediacommunity['media:starRating']['@average']) - 1
         #
         stub['published'] = entry['published']
+        stub['rating'] = round(starrating * 25, 2)
         stub['title'] = unicode(mediagroup['media:title'])
         stub['url'] = self.url.format(entry['yt:videoId'])
         stub['duration'] = self.videoDuration(stub['url'])
@@ -180,13 +186,13 @@ class TinyFeed(object):
         stub['views'] = self.formatViews(mediacommunity['media:statistics']['@views'])
         stub['thumbnail'] = mediagroup['media:thumbnail']['@url'].replace('hqdefault', 'mqdefault')
         #
-        stub['rating'] = float(mediacommunity['media:starRating']['@average']) * 20#likes percentage
-        likes = int(stub['rating'] * 0.01 * int(mediacommunity['media:starRating']['@count']))
-        dislikes = int(mediacommunity['media:starRating']['@count']) - likes
-        if likes == dislikes == 0:
-            stub['ratio'] = 'Like/Dislike count unavailable'
+        likes = int(round(starrating * 0.25 * totalratings))
+        dislikes = totalratings - likes
+        #
+        if likes + dislikes > 0:
+            stub['ratio'] = self.formatRatings(likes, dislikes)
         else:
-            stub['ratio'] = '{0} | {1}'.format(self.formatViews(likes), self.formatViews(dislikes))#likes to dislikes
+            stub['ratio'] = 'Rating unavailable'
         #
         return stub
 
@@ -202,13 +208,18 @@ class TinyFeed(object):
     def newRating(self, dictobj, index):
         entry = dictobj['feed']['entry'][index]
         mediacommunity = entry['media:group']['media:community']
-        rating = float(mediacommunity['media:starRating']['@average']) * 20#likes percentage
-        likes = int(rating * 0.01 * int(mediacommunity['media:starRating']['@count']))
-        dislikes = int(mediacommunity['media:starRating']['@count']) - likes
-        if likes == dislikes == 0:
-            ratio = 'Like/Dislike count unavailable'
+        totalratings = int(mediacommunity['media:starRating']['@count'])
+        starrating = float(mediacommunity['media:starRating']['@average']) - 1
+        #
+        rating = round(starrating * 25, 2)
+        likes = int(round(starrating * 0.25 * totalratings))
+        dislikes = totalratings - likes
+        #
+        if likes + dislikes > 0:
+            ratio = self.formatRatings(likes, dislikes)
         else:
-            ratio = '{0} | {1}'.format(self.formatViews(likes), self.formatViews(dislikes))#likes to dislikes
+            ratio = 'Rating unavailable'
+        #
         return rating, ratio
 
     def updateFeed(self, oldfeed, newfeed, previews):

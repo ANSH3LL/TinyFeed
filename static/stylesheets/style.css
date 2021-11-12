@@ -13,6 +13,7 @@
     --menu-hover-color: #e3e3e3;
     --responsive-color: #353535;
     --placeholder-color: #717171;
+    --unavailable-color: #3c3c3c;
     --modal-bg-color: rgba(0, 0, 0, .75);
     --balloon-color: rgba(16, 16, 16, .95);
     --fringes-color: rgba(249, 249, 249, .95);
@@ -31,6 +32,7 @@
     --menu-hover-color: #4e4e4e;
     --responsive-color: #cacaca;
     --placeholder-color: #8e8e8e;
+    --unavailable-color: #d3d3d3;
     --menu-bg-color: rgba(0, 0, 0, .97);
     --fringes-color: rgba(6, 6, 6, 0.95);
     --modal-bg-color: rgba(88, 88, 88, .75);
