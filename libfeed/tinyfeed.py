@@ -150,7 +150,15 @@ class TinyFeed(object):
             stub['duration'] = self.videoDuration(stub['url'])
             #stub['description'] = unicode(mediagroup['media:description'])
             stub['preview'] = self.extractPreview(entry['yt:videoId'], previews)
-            #stub['rating'] = float(mediacommunity['media:starRating']['@average'])
+            #
+            stub['rating'] = float(mediacommunity['media:starRating']['@average']) * 20#likes percentage
+            likes = int(stub['rating'] * 0.01 * int(mediacommunity['media:starRating']['@count']))
+            dislikes = int(mediacommunity['media:starRating']['@count']) - likes
+            if likes == dislikes == 0:
+                stub['ratio'] = 'Like/Dislike count unavailable'
+            else:
+                stub['ratio'] = '{0} | {1}'.format(self.formatViews(likes), self.formatViews(dislikes))#likes to dislikes
+            #
             stub['views'] = self.formatViews(mediacommunity['media:statistics']['@views'])
             stub['thumbnail'] = mediagroup['media:thumbnail']['@url'].replace('hqdefault', 'mqdefault')#maxresdefault is unreliable
             #
@@ -172,6 +180,14 @@ class TinyFeed(object):
         stub['views'] = self.formatViews(mediacommunity['media:statistics']['@views'])
         stub['thumbnail'] = mediagroup['media:thumbnail']['@url'].replace('hqdefault', 'mqdefault')
         #
+        stub['rating'] = float(mediacommunity['media:starRating']['@average']) * 20#likes percentage
+        likes = int(stub['rating'] * 0.01 * int(mediacommunity['media:starRating']['@count']))
+        dislikes = int(mediacommunity['media:starRating']['@count']) - likes
+        if likes == dislikes == 0:
+            stub['ratio'] = 'Like/Dislike count unavailable'
+        else:
+            stub['ratio'] = '{0} | {1}'.format(self.formatViews(likes), self.formatViews(dislikes))#likes to dislikes
+        #
         return stub
 
     def newViewCount(self, dictobj, index):
@@ -182,6 +198,18 @@ class TinyFeed(object):
     def newTitle(self, dictobj, index):
         entry = dictobj['feed']['entry'][index]
         return unicode(entry['media:group']['media:title'])
+
+    def newRating(self, dictobj, index):
+        entry = dictobj['feed']['entry'][index]
+        mediacommunity = entry['media:group']['media:community']
+        rating = float(mediacommunity['media:starRating']['@average']) * 20#likes percentage
+        likes = int(rating * 0.01 * int(mediacommunity['media:starRating']['@count']))
+        dislikes = int(mediacommunity['media:starRating']['@count']) - likes
+        if likes == dislikes == 0:
+            ratio = 'Like/Dislike count unavailable'
+        else:
+            ratio = '{0} | {1}'.format(self.formatViews(likes), self.formatViews(dislikes))#likes to dislikes
+        return rating, ratio
 
     def updateFeed(self, oldfeed, newfeed, previews):
         ix = ix2 = 0
@@ -212,6 +240,7 @@ class TinyFeed(object):
                 if entry['duration'] in ['00:00', 'LIVE']:
                     entry['duration'] = self.videoDuration(entry['url'])
                 entry['preview'] = self.extractPreview(entry['url'][32:], previews)
+                entry['rating'], entry['ratio'] = self.newRating(newfeed, x)
                 entry['views'] = self.newViewCount(newfeed, x)
                 entry['title'] = self.newTitle(newfeed, x)
                 ix2 += 1
