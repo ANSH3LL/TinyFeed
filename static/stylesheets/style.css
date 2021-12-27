@@ -4,7 +4,6 @@
 :root {
     --fg-color: #000;
     --bg-color: #fff;
-    --likes-color: #00b000;
     --input-color: #756f6f;
     --spinner-bg-color: #111;
     --search-bg-color: #f2f2f2;
@@ -13,7 +12,6 @@
     --menu-hover-color: #e3e3e3;
     --responsive-color: #353535;
     --placeholder-color: #717171;
-    --unavailable-color: #3c3c3c;
     --modal-bg-color: rgba(0, 0, 0, .75);
     --balloon-color: rgba(16, 16, 16, .95);
     --fringes-color: rgba(249, 249, 249, .95);
@@ -24,7 +22,7 @@
     --bg-color: #000;
     --fg-color: #ebebeb;
     --input-color: #8a9090;
-    --likes-color: #0ad608;
+    
     --spinner-bg-color: #eee;
     --search-bg-color: #323232;
     --balloon-text-color: #000;
@@ -32,7 +30,6 @@
     --menu-hover-color: #4e4e4e;
     --responsive-color: #cacaca;
     --placeholder-color: #8e8e8e;
-    --unavailable-color: #d3d3d3;
     --menu-bg-color: rgba(0, 0, 0, .97);
     --fringes-color: rgba(6, 6, 6, 0.95);
     --modal-bg-color: rgba(88, 88, 88, .75);
@@ -422,27 +419,9 @@ body:not(.tab-key-used) :focus {
     box-shadow: 0px 0px 15px -5px #fff;
 }
 
-.rating-bar {
-    padding: 1px 0 3px 0;
-    cursor: default !important;
-}
-
-.dislikes {
-    height: 2px;
-    width: 240px;
-    background: #ff272a;
-    margin: 1px 0 1px 0;
-}
-
-.likes {
-    height: 2px;
-    margin: 1px 0 1px 0;
-    background: var(--likes-color);
-}
-
 .video-title {
     overflow: hidden;
-    margin: 0 0 4px 0;
+    margin: 3px 0 4px 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;

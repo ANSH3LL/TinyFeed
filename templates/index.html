@@ -132,15 +132,6 @@
                                 <span class="video-duration">{{ entry['duration'] }}</span>
                                 {% endif %}
                             </div>
-                            <div class="rating-bar" aria-label="{{ entry['ratio'] }}" data-balloon-pos="down">
-                                <div class="dislikes">
-                                    {% if entry['ratio'] == 'Rating unavailable' %}
-                                    <div class="likes" style="width:100%; background: var(--unavailable-color);"></div>
-                                    {% else %}
-                                    <div class="likes" style="width:{{ entry['rating'] }}%;"></div>
-                                    {% endif %}
-                                </div>
-                            </div>
                             <div class="video-info">
                                 <b class="video-title" title="{{ entry['title'] }}">{{ entry['title'] }}</b>
                                 <span>{{ entry['views'] }} views&nbsp;&nbsp;•&nbsp;&nbsp;{{ fancyDate(entry['published']) }}</span>

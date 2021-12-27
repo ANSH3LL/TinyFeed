@@ -34,9 +34,6 @@ class TinyFeed(object):
         stub = denominations[magnitude]
         return num + stub
 
-    def formatRatings(self, likes, dislikes):
-        return '{:,} / {:,}'.format(likes, dislikes)
-
     def parseDate(self, datestr, tzoffset = 0):
         dateobj = datetime.datetime.strptime(datestr, utils.dfmt)
         return dateobj + datetime.timedelta(minutes = tzoffset)
@@ -145,25 +142,17 @@ class TinyFeed(object):
             stub = {}
             mediagroup = entry['media:group']
             mediacommunity = mediagroup['media:community']
-            totalratings = int(mediacommunity['media:starRating']['@count'])
-            starrating = float(mediacommunity['media:starRating']['@average']) - 1
             #
+            #stub['updated'] = entry['updated']
             stub['published'] = entry['published']
-            stub['rating'] = round(starrating * 25, 2)
             stub['title'] = unicode(mediagroup['media:title'])
             stub['url'] = self.url.format(entry['yt:videoId'])
             stub['duration'] = self.videoDuration(stub['url'])
+            #stub['description'] = unicode(mediagroup['media:description'])
             stub['preview'] = self.extractPreview(entry['yt:videoId'], previews)
+            #stub['rating'] = float(mediacommunity['media:starRating']['@average'])
             stub['views'] = self.formatViews(mediacommunity['media:statistics']['@views'])
-            stub['thumbnail'] = mediagroup['media:thumbnail']['@url'].replace('hqdefault', 'mqdefault')
-            #
-            likes = int(round(starrating * 0.25 * totalratings))
-            dislikes = totalratings - likes
-            #
-            if likes + dislikes > 0:
-                stub['ratio'] = self.formatRatings(likes, dislikes)
-            else:
-                stub['ratio'] = 'Rating unavailable'
+            stub['thumbnail'] = mediagroup['media:thumbnail']['@url'].replace('hqdefault', 'mqdefault')#maxresdefault is unreliable
             #
             data['entries'].append(stub)
         return data
@@ -174,25 +163,14 @@ class TinyFeed(object):
         #
         mediagroup = entry['media:group']
         mediacommunity = mediagroup['media:community']
-        totalratings = int(mediacommunity['media:starRating']['@count'])
-        starrating = float(mediacommunity['media:starRating']['@average']) - 1
         #
         stub['published'] = entry['published']
-        stub['rating'] = round(starrating * 25, 2)
         stub['title'] = unicode(mediagroup['media:title'])
         stub['url'] = self.url.format(entry['yt:videoId'])
         stub['duration'] = self.videoDuration(stub['url'])
         stub['preview'] = self.extractPreview(entry['yt:videoId'], previews)
         stub['views'] = self.formatViews(mediacommunity['media:statistics']['@views'])
         stub['thumbnail'] = mediagroup['media:thumbnail']['@url'].replace('hqdefault', 'mqdefault')
-        #
-        likes = int(round(starrating * 0.25 * totalratings))
-        dislikes = totalratings - likes
-        #
-        if likes + dislikes > 0:
-            stub['ratio'] = self.formatRatings(likes, dislikes)
-        else:
-            stub['ratio'] = 'Rating unavailable'
         #
         return stub
 
@@ -204,23 +182,6 @@ class TinyFeed(object):
     def newTitle(self, dictobj, index):
         entry = dictobj['feed']['entry'][index]
         return unicode(entry['media:group']['media:title'])
-
-    def newRating(self, dictobj, index):
-        entry = dictobj['feed']['entry'][index]
-        mediacommunity = entry['media:group']['media:community']
-        totalratings = int(mediacommunity['media:starRating']['@count'])
-        starrating = float(mediacommunity['media:starRating']['@average']) - 1
-        #
-        rating = round(starrating * 25, 2)
-        likes = int(round(starrating * 0.25 * totalratings))
-        dislikes = totalratings - likes
-        #
-        if likes + dislikes > 0:
-            ratio = self.formatRatings(likes, dislikes)
-        else:
-            ratio = 'Rating unavailable'
-        #
-        return rating, ratio
 
     def updateFeed(self, oldfeed, newfeed, previews):
         ix = ix2 = 0
@@ -251,7 +212,6 @@ class TinyFeed(object):
                 if entry['duration'] in ['00:00', 'LIVE']:
                     entry['duration'] = self.videoDuration(entry['url'])
                 entry['preview'] = self.extractPreview(entry['url'][32:], previews)
-                entry['rating'], entry['ratio'] = self.newRating(newfeed, x)
                 entry['views'] = self.newViewCount(newfeed, x)
                 entry['title'] = self.newTitle(newfeed, x)
                 ix2 += 1
