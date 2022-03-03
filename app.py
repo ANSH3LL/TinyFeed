@@ -57,9 +57,9 @@ def remfeed():
 def updatefeed():
     sourceID = request.args.get('sourceID')
     if sourceID == 'home':
-        datadict = feedobj.processSources(dataobj.storedict.keys(), dataobj.storedict)
+        datadict = feedobj.processSources(dataobj.storedict.keys())
     else:
-        datadict = {sourceID: feedobj.processSource(sourceID, dataobj.storedict)}
+        datadict = {sourceID: feedobj.processSource(sourceID)}
     dataobj.store(datadict)
     return jsonify({'success': True})
 

@@ -4,7 +4,6 @@ import datetime
 dfmt = '%Y-%m-%dT%H:%M:%S+00:00'
 
 #User Agents
-UAOmea = {'user-agent': 'JetBrains Omea Reader 2.2 (http://www.jetbrains.com/omea/reader/)'}
 UAFirefox = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101 Firefox/84.0'}
 UAChrome = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'}
 
