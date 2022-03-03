@@ -1,5 +1,7 @@
-# TinyFeed
+# TinyFeed [Invidious API]
 A lightweight, easy to use youtube channel & playlist feed aggregator
+
+Needs more work, currently suboptimal, but provides most functionality just fine
 
 ### Features
 - Supports youtube channels and playlists
@@ -38,12 +40,11 @@ javascript: for (var arrScripts = document.getElementsByTagName('script'), i = 0
 [Pyinstaller](https://www.pyinstaller.org/) may be used to build TinyFeed though this has not been tested yet. There are plans to release Windows and Linux binaries in the future.
 
 ### Limitations
-All limitations resultant of the youtube channel and playlist rss/atom feed affect TinyFeed and may impede its proper functioning in certain cases.
+All limitations resultant of the invidious API affect TinyFeed and may impede its proper functioning in certain cases.
 
 ### Credits
 - Part of the app icon/favicon came from [svgrepo.com](https://www.svgrepo.com)
 - Empty state icon made by [Freepik](https://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/)
-- Xmltodict library by [martinblech](https://github.com/martinblech/xmltodict)
 
 ### Screenshots
 ![Light mode](https://i.imgur.com/8P9w1r5.png)
