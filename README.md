@@ -46,11 +46,9 @@ All limitations resultant of the youtube channel and playlist rss/atom feed affe
 - Xmltodict library by [martinblech](https://github.com/martinblech/xmltodict)
 
 ### Screenshots
-![Light mode](https://i.imgur.com/8P9w1r5.png)
+![Light mode](https://i.imgur.com/yaPmHrC.png)
 
-![Dark mode](https://i.imgur.com/FNCKMMJ.png)
-
-**[Video demo](https://streamable.com/kzov9j)**
+![Dark mode](https://i.imgur.com/9yQm785.png)
 
 ### License
 This project is released under the GPL-3.0 license. See the included license file.
