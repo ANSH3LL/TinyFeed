@@ -47,11 +47,9 @@ All limitations resultant of the invidious API affect TinyFeed and may impede it
 - Empty state icon made by [Freepik](https://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/)
 
 ### Screenshots
-![Light mode](https://i.imgur.com/8P9w1r5.png)
+![Light mode](https://i.imgur.com/yaPmHrC.png)
 
-![Dark mode](https://i.imgur.com/FNCKMMJ.png)
-
-**[Video demo](https://streamable.com/kzov9j)**
+![Dark mode](https://i.imgur.com/9yQm785.png)
 
 ### License
 This project is released under the GPL-3.0 license. See the included license file.
