@@ -139,6 +139,6 @@ class TinyFeed(object):
     def processSources(self, sourceIDs):
         masterdict = {}
         for sourceID in sourceIDs:
-            masterdict[sourceID] = self.processSource(sourceID, oldfeed)
+            masterdict[sourceID] = self.processSource(sourceID)
             time.sleep(0.5) #change instances instead of sleeping?
         return masterdict
