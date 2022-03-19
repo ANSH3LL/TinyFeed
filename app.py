@@ -16,7 +16,7 @@ def latestvideos():
     marked = []
     sample = dataobj.needUpdate()
     if sample:
-        updated = feedobj.processSources(sample, dataobj.storedict)
+        updated = feedobj.processSources(sample)
         dataobj.store(updated)
     datadict = copy.deepcopy(dataobj.storedict)
     for sourceID in datadict:
