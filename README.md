@@ -50,5 +50,7 @@ All limitations resultant of the youtube channel and playlist rss/atom feed affe
 
 ![Dark mode](https://i.imgur.com/9yQm785.png)
 
+**[Video demo](https://streamable.com/kzov9j)**
+
 ### License
 This project is released under the GPL-3.0 license. See the included license file.
