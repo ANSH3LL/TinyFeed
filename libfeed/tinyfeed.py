@@ -76,28 +76,19 @@ class TinyFeed(object):
     # TODO: test PL5JFPVMx5WzV5xzOrrXppBegCD-IcawQq
     def videoDuration(self, url):
         embedURL = url.replace("watch?v=", "embed/")
-        print("videoDuration 10000")
         res = requests.get(embedURL, headers=utils.UAFirefox)
-        print("\n\nvideoDuration 10100 - res:", str(res))
         if res.status_code == 200:
-            print("videoDuration 10101 - type(res.content):", type(res.content))
             if "live.jpg" in res.content.decode("UTF-8"):
-                print("videoDuration 10110")
                 return "LIVE"  # hacky and poorly tested, but seems to work
 
             try:
-                print("videoDuration 10102")
                 seconds = self.timePattern2.search(res.content).group(1)
             except AttributeError:
-                print("videoDuration 10103")
                 return self.videoDuration_(url)
             except:
-                print("videoDuration 10104")
                 return "00:00"
         else:
-            print("videoDuration 10200")
             return "00:00"
-        print("videoDuration 20000")
         return self.formatTime(int(seconds))
 
     def videoDuration_(self, url):
@@ -197,7 +188,6 @@ class TinyFeed(object):
             feed["entry"] = [feed["entry"]]
         #
         for entry in feed["entry"]:
-            print("\n - entry: \n", str(entry))
             stub = {}
             mediagroup = entry["media:group"]
             mediacommunity = mediagroup["media:community"]
@@ -323,7 +313,7 @@ if __name__ == "__main__":
     # pdata = test.parseFeed(dobj)
     # with open('cleaned-UCuFFtHWoLl5fauMMD5Ww2jA.json', 'w') as handle:
     #    json.dump(pdata, handle, indent = 4)
-    print("Done")
+    # print("Done")
     #################################################################################
     # diff = 200#hours -> approx 1 week
     # with open('cleaned-UCyxch3IPBwxuEM42yCJFR2Q.json', 'r') as handle:

@@ -1,5 +1,6 @@
+.venv/
 build/
-store/
+store/data.json
 future/
 *.txt
 *.pyc
