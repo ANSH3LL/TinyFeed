@@ -17,12 +17,14 @@ A lightweight, easy to use youtube channel & playlist feed aggregator
 
 ### Usage
 1. Clone the repository
-2. In the main directory, create a folder named `store`
-3. Navigate to `store` and create a file named `data.json`
-4. Open `data.json` in a text editor and therein type `{}`
-5. Save and exit the text editor
-6. Double click `app.py` or run `python app.py flask run` in the terminal
-7. Navigate to `localhost` or `127.0.0.1` on your web browser
+2. Run in terminal:
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+pip3 install -r requirements.txt
+```
+3. Run app with `python3 app.py flask run` in the terminal
+4. Navigate to `http://localhost:8080` or `http://127.0.0.1:8080` on your web browser
 
 ### Adding channels/playlists
 1. Extract the channel or playlist ID from its URL or page on youtube
