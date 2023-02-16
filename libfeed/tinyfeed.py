@@ -8,10 +8,10 @@ class TinyFeed(object):
         self.channelurl = 'https://www.youtube.com/channel/{}/videos'
         self.timePattern1 = re.compile(r'\"lengthSeconds\":\"([0-9]+)\"')
         self.timePattern2 = re.compile(r'videoDurationSeconds\\\":\\\"([0-9]+)')
-        self.iconPattern1 = re.compile(r'https://yt3\.ggpht\.com/ytc/[a-zA-Z0-9-_]+=s')
-        self.iconPattern2 = re.compile(r'https://yt[0-9]\.ggpht\.com/[a-zA-Z0-9-_]+=s')
         self.vpidPattern1 = re.compile(r'https://i[0-9]*.ytimg.com/an_webp/([a-zA-Z0-9-_]+)')
         self.prevPattern1 = re.compile(r'[\"|\'](https://i[0-9]*.ytimg.com/an_webp/[a-zA-Z0-9-_]+/.*?)[\"|\']')
+        self.iconPattern1 = re.compile(r'\"(https://yt[0-9]\.googleusercontent\.com/[a-zA-Z0-9-_]+=s)[a-z\-0-9]+\",\"width\"')
+        self.iconPattern2 = re.compile(r'\"(https://yt[0-9]\.googleusercontent\.com/ytc/[a-zA-Z0-9-_]+=s)[a-z\-0-9]+\",\"width\"')
 
     def formatDate(self, datestr):
         dateobj = self.parseDate(datestr)
@@ -71,7 +71,7 @@ class TinyFeed(object):
         icons = []
         res = requests.get(url, headers = utils.UAChrome)
         if res.status_code == 200:
-            try: iconurl = self.iconPattern1.search(res.content).group()
+            try: iconurl = self.iconPattern1.search(res.content).group(1)
             except AttributeError: return self.extractIcon_(res.content, iconsizes)
             except: return ['', '']
         else: return ['', '']
@@ -81,7 +81,7 @@ class TinyFeed(object):
 
     def extractIcon_(self, content, iconsizes):
         icons = []
-        try: iconurl = self.iconPattern2.search(content).group()
+        try: iconurl = self.iconPattern2.search(content).group(1)
         except: return ['', '']
         for size in iconsizes:
             icons.append(iconurl + str(size))
@@ -112,22 +112,17 @@ class TinyFeed(object):
                 json.dump(dictobj, handle, indent = 4)
         return dictobj
 
-    def parseSource(self, feedID):
-        yt, sourceType, sourceURLstub = feedID.split(':')
-        if sourceType == 'channel':
-            sourceURL = self.channelurl.format(sourceURLstub)
-        elif sourceType == 'playlist':
-            sourceURL = self.playlisturl.format(sourceURLstub)
-        else: raise RuntimeError, 'Unknown source type: {}'.format(sourceType)
-        return sourceURL#, sourceType
+    def parseSourceURL(self, sourceID, playlist = False):
+        if playlist:
+            return self.playlisturl.format(sourceID)
+        else:
+            return self.channelurl.format(sourceID)
 
-    def parseFeed(self, dictobj, previews):
+    def parseFeed(self, dictobj, previews, url):
         data = {'entries': []}
         feed = dictobj['feed']
-        sourceInfo = self.parseSource(feed['id'])
         #
-        data['sourceURL'] = sourceInfo#[0]
-        #data['sourceType'] = sourceInfo[1]
+        data['sourceURL'] = url
         data['sourceName'] = feed['title']
         data['channelIcon'] = self.extractIcon(feed['author']['uri'])
         data['lastUpdated'] = datetime.datetime.utcnow().strftime(utils.dfmt)
@@ -143,16 +138,13 @@ class TinyFeed(object):
             mediagroup = entry['media:group']
             mediacommunity = mediagroup['media:community']
             #
-            #stub['updated'] = entry['updated']
             stub['published'] = entry['published']
             stub['title'] = unicode(mediagroup['media:title'])
             stub['url'] = self.url.format(entry['yt:videoId'])
             stub['duration'] = self.videoDuration(stub['url'])
-            #stub['description'] = unicode(mediagroup['media:description'])
             stub['preview'] = self.extractPreview(entry['yt:videoId'], previews)
-            #stub['rating'] = float(mediacommunity['media:starRating']['@average'])
             stub['views'] = self.formatViews(mediacommunity['media:statistics']['@views'])
-            stub['thumbnail'] = mediagroup['media:thumbnail']['@url'].replace('hqdefault', 'mqdefault')#maxresdefault is unreliable
+            stub['thumbnail'] = mediagroup['media:thumbnail']['@url'].replace('hqdefault', 'mqdefault')
             #
             data['entries'].append(stub)
         return data
@@ -229,7 +221,8 @@ class TinyFeed(object):
             self.updateFeed(oldfeed[sourceID], data, previews)
             oldfeed[sourceID]['lastUpdated'] = datetime.datetime.utcnow().strftime(utils.dfmt)
             return oldfeed[sourceID]
-        return self.parseFeed(data, previews)
+        url = self.parseSourceURL(sourceID, playlist)
+        return self.parseFeed(data, previews, url)
 
     def processSources(self, sourceIDs, oldfeed = None):
         masterdict = {}
@@ -239,22 +232,29 @@ class TinyFeed(object):
         return masterdict
 
 if __name__ == '__main__':
+    c_url = 'UCEDkO7wshcDZ7UZo17rPkzQ'
+    p_url = 'PLeyJPHbRnGaZmzkCwy3-8ykUZm_8B9kKM'
+    #
     test = TinyFeed()
-    res = test.downloadFeed('PLeyJPHbRnGaZmzkCwy3-8ykUZm_8B9kKM', True)
-    if res.status_code == 200:
-        dobj = test.feedToDict(res.content, 'verbose-PLeyJPHbRnGaZmzkCwy3-8ykUZm_8B9kKM.json')
+    res1 = test.downloadFeed(c_url)
+    res2 = test.downloadFeed(p_url, True)
+    #
+    if res1.status_code == 200:
+        obj1 = test.feedToDict(res1.content, 'verbose-{}.json'.format(c_url))
+        data1 = test.parseFeed(obj1, test.extractPreviews(c_url), test.parseSourceURL(c_url))
+        #
+        with open('cleaned-{}.json'.format(c_url), 'w') as handle1:
+            json.dump(data1, handle1, indent = 4)
     else:
-        raise RuntimeError, 'Unexpected response: {}'.format(res.status_code)
-    #pdata = test.parseFeed(dobj)
-    #with open('cleaned-UCuFFtHWoLl5fauMMD5Ww2jA.json', 'w') as handle:
-    #    json.dump(pdata, handle, indent = 4)
+        raise RuntimeError, 'Unexpected response: {}'.format(res1.status_code)
+    #
+    if res2.status_code == 200:
+        obj2 = test.feedToDict(res2.content, 'verbose-{}.json'.format(p_url))
+        data2 = test.parseFeed(obj2, [], test.parseSourceURL(p_url, True))
+        #
+        with open('cleaned-{}.json'.format(p_url), 'w') as handle2:
+            json.dump(data2, handle2, indent = 4)
+    else:
+        raise RuntimeError, 'Unexpected response: {}'.format(res2.status_code)
+    #
     print 'Done'
-    #################################################################################
-    #diff = 200#hours -> approx 1 week
-    #with open('cleaned-UCyxch3IPBwxuEM42yCJFR2Q.json', 'r') as handle:
-    #    data = json.load(handle)
-    #with open('filtered1wk-UCyxch3IPBwxuEM42yCJFR2Q.json', 'w') as handle:
-    #    json.dump(test.filterEntries(data['entries'], diff), handle, indent = 4)
-    #print 'Done'
-    #################################################################################
-    #print test.extractIcon('https://www.youtube.com/user/hellomayuko')

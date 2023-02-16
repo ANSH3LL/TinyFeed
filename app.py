@@ -14,10 +14,10 @@ feedobj = tinyfeed.TinyFeed()
 
 def latestvideos():
     marked = []
-    sample = dataobj.needUpdate()
-    if sample:
-        updated = feedobj.processSources(sample, dataobj.storedict)
-        dataobj.store(updated)
+    #sample = dataobj.needUpdate()
+    #if sample:
+    #    updated = feedobj.processSources(sample, dataobj.storedict)
+    #    dataobj.store(updated)
     datadict = copy.deepcopy(dataobj.storedict)
     for sourceID in datadict:
         newvideos = feedobj.filterEntries(datadict[sourceID]['entries'], 100)
